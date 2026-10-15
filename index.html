@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Freelance Runway and Savings Calculator" />
+  <meta name="monetag" content="686d9bce039e76d9968bf5c528c55e23">
+  <title>Freelance Runway &amp; Savings Calculator</title>
+
+  <style>
+    :root {
+      --ink: #202338;
+      --muted: #626b86;
+      --white: rgba(255, 255, 255, 0.45);
+      --white-strong: rgba(255, 255, 255, 0.66);
+      --stroke: rgba(255, 255, 255, 0.6);
+      --violet: #8b7cff;
+      --cyan: #4bdbe7;
+      --mint: #52c9a4;
+      --shadow: rgba(31, 38, 135, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      min-width: 320px;
+      background: #e8f5f4;
+    }
+
+    body {
+      position: relative;
+      isolation: isolate;
+      min-height: 100vh;
+      overflow-x: hidden;
+      pointer-events: auto;
+      color: var(--ink);
+      background: linear-gradient(115deg, #fffdf7, #dff8f7, #eee9ff, #fdf8ff, #dff6f5);
+      background-size: 320% 320%;
+      transition: all 0.5s ease-in-out;
+      animation: meshDrift 8s ease-in-out infinite alternate;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    body::before,
+    body::after {
+      position: fixed;
+      z-index: -1;
+      width: 28rem;
+      height: 28rem;
+      border-radius: 50%;
+      content: "";
+      filter: blur(8px);
+      transition: all 0.5s ease-in-out;
+      pointer-events: none;
+    }
+
+    body::before {
+      top: -10rem;
+      left: -9rem;
+      background: rgba(255, 240, 198, 0.42);
+    }
+
+    body::after {
+      right: -10rem;
+      bottom: -12rem;
+      background: rgba(165, 220, 255, 0.32);
+    }
+
+    @keyframes meshDrift {
+      0% { background-position: 0% 35%; }
+      50% { background-position: 100% 65%; }
+      100% { background-position: 35% 100%; }
+    }
+
+    /* Keep injected floating ad surfaces inside a viewport-safe stacking frame. */
+    body > [id*="social" i],
+    body > [class*="social" i] {
+      position: fixed !important;
+      z-index: 2147483000 !important;
+      inset: auto 0 0 0;
+      max-width: 100vw;
+      pointer-events: auto;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100% - 32px));
+      pointer-events: auto;
+      margin: 0 auto;
+      padding: 28px 0 52px;
+    }
+
+    .topbar,
+    .main-card,
+    .ad-card,
+    .result-card,
+    .message,
+    .static-ad,
+    .layout,
+    form,
+    input,
+    button {
+      pointer-events: auto;
+    }
+
+    .topbar,
+    .main-card,
+    .ad-card,
+    .result-card,
+    .message,
+    .static-ad {
+      border: 1px solid var(--stroke);
+      background: var(--white);
+      box-shadow: 0 8px 32px 0 var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      width: 100%;
+      min-height: 0;
+      margin-bottom: 24px;
+      padding: 20px;
+      border-radius: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 48px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      box-shadow: 0 10px 24px rgba(100, 123, 220, 0.22);
+      font-size: 1.5rem;
+      font-weight: 900;
+    }
+
+    .brand h1 {
+      font-size: clamp(1.05rem, 2.5vw, 1.4rem);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+    }
+
+    .brand p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .visitor-pill {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border: 1px solid var(--stroke);
+      border-radius: 999px;
+      color: #24775f;
+      background: rgba(205, 255, 237, 0.42);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      font-size: 0.72rem;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .visitor-pill strong {
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status-pill {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border: 1px solid var(--stroke);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.35);
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-right: 7px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 10px rgba(82, 201, 164, 0.8);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 310px);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .main-card,
+    .ad-card {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      border-radius: 28px;
+      pointer-events: auto;
+    }
+
+    .main-card {
+      padding: clamp(22px, 5vw, 46px);
+    }
+
+    .hero {
+      margin-bottom: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      margin-bottom: 16px;
+      padding: 7px 11px;
+      border: 1px solid rgba(139, 124, 255, 0.28);
+      border-radius: 999px;
+      color: #6559c7;
+      background: rgba(255, 255, 255, 0.42);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      max-width: 780px;
+      margin-bottom: 14px;
+      color: var(--ink);
+      font-size: clamp(2.2rem, 6vw, 4.8rem);
+      font-weight: 850;
+      letter-spacing: -0.08em;
+      line-height: 0.98;
+    }
+
+    .hero h2 span {
+      color: transparent;
+      background: linear-gradient(90deg, #6256dc, #13aebd);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .hero p {
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    form,
+    .results,
+    .message,
+    .cta {
+      pointer-events: auto;
+    }
+
+    .currency-toggle {
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      margin-bottom: 18px;
+      padding: 4px;
+      gap: 4px;
+      border: 1px solid var(--stroke);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.32);
+      box-shadow: inset 0 1px 2px rgba(31, 38, 135, 0.035);
+      pointer-events: auto;
+    }
+
+    .currency-option {
+      min-width: 72px;
+      padding: 8px 12px;
+      border: 0;
+      border-radius: 10px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 800;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .currency-option:hover,
+    .currency-option[aria-pressed="true"] {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 4px 12px rgba(31, 38, 135, 0.07);
+    }
+
+    .currency-option:focus-visible,
+    .budget-slider:focus-visible {
+      outline: 3px solid rgba(98, 86, 220, 0.32);
+      outline-offset: 3px;
+    }
+
+    .pipeline-panel,
+    .runway-graph-panel {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid var(--stroke);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62), 0 8px 28px var(--shadow);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      pointer-events: auto;
+    }
+
+    .pipeline-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .pipeline-heading h3,
+    .runway-graph-panel h3 {
+      color: var(--ink);
+      font-size: 1.05rem;
+      font-weight: 820;
+      letter-spacing: -0.025em;
+    }
+
+    .pipeline-heading p,
+    .runway-graph-panel p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.73rem;
+    }
+
+    .add-project,
+    .remove-project {
+      border: 0;
+      cursor: pointer;
+      font-family: inherit;
+      pointer-events: auto;
+    }
+
+    .add-project {
+      flex: 0 0 auto;
+      padding: 9px 12px;
+      border-radius: 11px;
+      color: #fff;
+      background: linear-gradient(100deg, #7162e9, #18b8c6);
+      box-shadow: 0 7px 16px rgba(98, 86, 220, 0.16);
+      font-size: 0.72rem;
+      font-weight: 820;
+    }
+
+    .project-rows {
+      display: grid;
+      gap: 9px;
+    }
+
+    .project-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(150px, 0.8fr) 32px;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .project-row input {
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+    }
+
+    .project-income-wrap {
+      position: relative;
+      pointer-events: auto;
+    }
+
+    .project-income-wrap .currency-symbol {
+      left: 12px;
+      font-size: 0.78rem;
+    }
+
+    .project-income {
+      padding-left: 30px !important;
+    }
+
+    .remove-project {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 10px;
+      color: #8a5b76;
+      background: rgba(255, 219, 232, 0.55);
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    .pipeline-total {
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .pipeline-total strong {
+      color: #24775f;
+      font-size: 0.86rem;
+    }
+
+    .adjustment-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .compact-control {
+      margin-top: 14px;
+    }
+
+    .graph-wrap {
+      width: 100%;
+      margin-top: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    #runwayGraph {
+      display: block;
+      width: 100%;
+      min-height: 180px;
+    }
+
+    .graph-gridline,
+    .graph-zero {
+      stroke: rgba(98, 107, 134, 0.18);
+      stroke-width: 1;
+    }
+
+    .graph-zero {
+      stroke: rgba(98, 86, 220, 0.4);
+      stroke-dasharray: 5 5;
+    }
+
+    .graph-area {
+      fill: url(#runwayGradient);
+      fill: rgba(113, 98, 233, 0.12);
+      stroke: none;
+    }
+
+    .graph-line {
+      fill: none;
+      stroke: #7162e9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 4;
+    }
+
+    .graph-crossover {
+      stroke: #e58b9f;
+      stroke-dasharray: 4 4;
+      stroke-width: 2;
+    }
+
+    .graph-point {
+      fill: #18b8c6;
+      stroke: #fff;
+      stroke-width: 3;
+    }
+
+    .graph-axis-label {
+      fill: #7e879f;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .budget-control {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
+      pointer-events: auto;
+    }
+
+    .budget-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 11px;
+    }
+
+    .budget-heading label {
+      color: var(--ink);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .budget-value {
+      flex: 0 0 auto;
+      color: #6256dc;
+      font-size: 0.82rem;
+      font-weight: 850;
+    }
+
+    .budget-slider {
+      width: 100%;
+      height: 7px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      outline: none;
+      appearance: none;
+      background: linear-gradient(90deg, #7162e9, #18b8c6);
+      box-shadow: none;
+      cursor: pointer;
+    }
+
+    .budget-slider::-webkit-slider-thumb {
+      width: 22px;
+      height: 22px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      appearance: none;
+      background: #7162e9;
+      box-shadow: 0 4px 12px rgba(98, 86, 220, 0.28);
+    }
+
+    .budget-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      background: #7162e9;
+      box-shadow: 0 4px 12px rgba(98, 86, 220, 0.28);
+    }
+
+    .budget-result {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 0.73rem;
+    }
+
+    .calculator-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      pointer-events: auto;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .field {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    .field,
+    .input-wrap {
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
+    }
+
+    .currency-symbol {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      color: #7b83a0;
+      font-size: 0.95rem;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    input {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      min-height: 54px;
+      padding: 0 14px 0 32px;
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      border-radius: 15px;
+      outline: none;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.42);
+      box-shadow: inset 0 1px 2px rgba(31, 38, 135, 0.04), 0 4px 14px rgba(31, 38, 135, 0.035);
+      font-size: 0.98rem;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    input::placeholder {
+      color: #9199b0;
+    }
+
+    input:focus {
+      border-color: rgba(98, 86, 220, 0.5);
+      background: rgba(255, 255, 255, 0.66);
+      box-shadow: 0 0 0 4px rgba(98, 86, 220, 0.1), 0 7px 20px rgba(31, 38, 135, 0.07);
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .result-card {
+      min-width: 0;
+      min-height: 154px;
+      padding: 20px;
+      border-radius: 21px;
+    }
+
+    .result-card.highlight {
+      border-color: rgba(82, 201, 164, 0.45);
+      background: rgba(205, 255, 237, 0.42);
+    }
+
+    .result-label {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 750;
+    }
+
+    .result-value {
+      margin: 12px 0 6px;
+      color: var(--ink);
+      font-size: clamp(2rem, 5vw, 3.3rem);
+      font-weight: 850;
+      letter-spacing: -0.07em;
+      line-height: 1;
+    }
+
+    .result-note {
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .expense-breakdown {
+      margin-top: 22px;
+      padding: 22px;
+      border: 1px solid var(--stroke);
+      border-radius: 21px;
+      background: rgba(255, 255, 255, 0.34);
+      box-shadow: 0 8px 32px 0 var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      pointer-events: auto;
+    }
+
+    .breakdown-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .breakdown-heading h3 {
+      color: var(--ink);
+      font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .breakdown-heading p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    .expense-table {
+      width: 100%;
+      min-width: 500px;
+      border-collapse: collapse;
+      color: var(--ink);
+      font-size: 0.8rem;
+    }
+
+    .expense-table th,
+    .expense-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+      text-align: left;
+    }
+
+    .expense-table th {
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .expense-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .expense-table td:not(:first-child) {
+      font-variant-numeric: tabular-nums;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .optimized-cell {
+      color: #24775f;
+    }
+
+    .print-report-title {
+      display: none;
+    }
+
+    .print-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 14px;
+      padding: 13px 16px;
+      border: 1px solid rgba(98, 86, 220, 0.58);
+      border-radius: 13px;
+      color: #6256dc;
+      background: rgba(255, 255, 255, 0.42);
+      box-shadow: 0 0 0 1px rgba(75, 219, 231, 0.22), 0 8px 20px rgba(98, 86, 220, 0.08);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 850;
+      transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      pointer-events: auto;
+    }
+
+    .print-button:hover {
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 0 18px rgba(75, 219, 231, 0.28), 0 10px 24px rgba(98, 86, 220, 0.12);
+      transform: translateY(-1px);
+    }
+
+    @media print {
+      body {
+        min-width: 0;
+        color: #202338;
+        background: #fff;
+        animation: none;
+      }
+
+      .app-shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .topbar,
+      .hero,
+      form,
+      .message,
+      .cta,
+      .ad-card,
+      .seo-content,
+      .print-button,
+      .pipeline-panel {
+        display: none !important;
+      }
+
+      .main-card {
+        border: 0;
+        padding: 0;
+        box-shadow: none;
+        background: #fff;
+      }
+
+      .results,
+      .expense-breakdown {
+        margin-top: 0;
+        border: 1px solid #d6d9e3;
+        box-shadow: none;
+        background: #fff;
+      }
+
+      .results {
+        margin-bottom: 18px;
+      }
+
+      .result-card,
+      .result-card.highlight {
+        border: 1px solid #d6d9e3;
+        box-shadow: none;
+        background: #fff;
+      }
+
+      .print-report-title {
+        display: block;
+        margin-bottom: 18px;
+        color: #202338;
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .table-wrap {
+        border: 0;
+      }
+
+      .expense-table {
+        min-width: 0;
+      }
+
+      .runway-graph-panel {
+        border: 1px solid #d6d9e3;
+        box-shadow: none;
+        background: #fff;
+      }
+
+      .graph-wrap {
+        border: 0;
+        background: #fff;
+      }
+    }
+    }
+
+    .seo-content {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .seo-panel {
+      padding: 22px;
+      border: 1px solid var(--stroke);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.34);
+      box-shadow: 0 8px 32px 0 var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      pointer-events: auto;
+    }
+
+    .seo-panel h3 {
+      margin-bottom: 9px;
+      color: var(--ink);
+      font-size: clamp(1.05rem, 2.2vw, 1.28rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+
+    .seo-panel p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.72;
+    }
+
+    .message {
+      min-height: 42px;
+      margin-top: 18px;
+      padding: 10px 13px;
+      border-radius: 14px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .message.success {
+      border-color: rgba(82, 201, 164, 0.45);
+      color: #24775f;
+      background: rgba(205, 255, 237, 0.48);
+    }
+
+    .message.warning {
+      border-color: rgba(218, 155, 74, 0.45);
+      color: #8a5b1f;
+      background: rgba(255, 232, 187, 0.52);
+    }
+
+    .cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 0;
+      border-radius: 16px;
+      color: #fff;
+      background: linear-gradient(100deg, #7162e9, #18b8c6);
+      box-shadow: 0 12px 24px rgba(98, 86, 220, 0.2);
+      cursor: pointer;
+      font-size: 0.86rem;
+      font-weight: 800;
+      text-align: left;
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    }
+
+    .cta:hover {
+      filter: brightness(1.05);
+      box-shadow: 0 16px 30px rgba(98, 86, 220, 0.28);
+      transform: translateY(-2px);
+    }
+
+    .cta:focus-visible {
+      outline: 3px solid #6256dc;
+      outline-offset: 4px;
+    }
+
+    .cta small {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.68rem;
+      font-weight: 500;
+    }
+
+    .cta-arrow {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .ad-card {
+      position: sticky;
+      top: 22px;
+      display: flex;
+      min-height: 520px;
+      padding: 18px;
+      flex-direction: column;
+      gap: 16px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.38);
+    }
+
+    .monetag-zone {
+      display: grid;
+      min-height: 44px;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.62);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.24);
+      pointer-events: auto;
+    }
+
+    .ad-content {
+      order: 0;
+      padding: 8px 6px 4px;
+      text-align: center;
+    }
+
+    .ad-icon {
+      display: grid;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 14px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      border-radius: 20px;
+      color: #fff;
+      background: linear-gradient(135deg, #9b8cff, #53d8e4);
+      box-shadow: 0 12px 25px rgba(98, 86, 220, 0.18);
+      font-size: 1.5rem;
+    }
+
+    .ad-content h3 {
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 1.08rem;
+      font-weight: 800;
+    }
+
+    .ad-content p {
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .static-ad {
+      padding: 16px;
+      border-radius: 19px;
+    }
+
+    .static-ad.figma {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 224, 238, 0.42));
+    }
+
+    .static-ad.quickbooks {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(217, 247, 234, 0.45));
+    }
+
+    .ad-kicker {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 0.63rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .static-ad h4 {
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .static-ad p {
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .ad-link {
+      display: inline-flex;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(100deg, #7162e9, #18b8c6);
+      font-size: 0.68rem;
+      font-weight: 750;
+    }
+
+    .ad-footer {
+      margin-top: auto;
+      padding-top: 13px;
+      border-top: 1px solid rgba(255, 255, 255, 0.56);
+      color: #7e879f;
+      font-size: 0.68rem;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .project-row {
+        grid-template-columns: minmax(0, 1fr) 32px;
+      }
+
+      .project-income-wrap {
+        grid-column: 1 / 2;
+      }
+
+      .remove-project {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+      }
+
+      .adjustment-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .ad-card {
+        position: relative;
+        min-height: 0;
+      }
+
+      .ad-content {
+        padding: 10px 32px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .app-shell {
+        width: min(100% - 22px, 560px);
+        padding-top: 16px;
+      }
+
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 15px;
+        padding: 18px;
+      }
+
+      .header-actions {
+        align-items: flex-start;
+        justify-content: flex-start;
+      }
+
+      .status-pill,
+      .visitor-pill {
+        align-self: flex-start;
+      }
+
+      .calculator-grid,
+      .results {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h2 {
+        font-size: clamp(2.3rem, 12vw, 3.8rem);
+      }
+    }
+
+    @media (max-width: 420px) {
+      .main-card,
+      .ad-card {
+        border-radius: 21px;
+      }
+
+      .main-card {
+        padding: 20px 16px;
+      }
+
+      .brand {
+        align-items: flex-start;
+      }
+
+      .brand p {
+        max-width: 220px;
+        line-height: 1.35;
+      }
+    }
+  </style>
+  <script data-cfasync="false" src="https://bauval.org/14/dbb83a65095a58afa5ad1f3d1fe4da39"></script>
+  <script data-cfasync="false" src="https://abscloud.org/1/592dccb704c619646975043f797962b9"></script>
+</head>
+
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">↗</div>
+        <div>
+          <h1>Freelance Runway</h1>
+          <p>Plan your next move with confidence</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="status-pill">
+          <span class="status-dot" aria-hidden="true"></span>
+          Calculated locally
+        </div>
+        <div class="visitor-pill" aria-live="polite">
+          Live Visitors Today: <strong id="visitor-count">1</strong>
+        </div>
+      </div>
+    </header>
+
+    <section class="layout">
+      <section class="main-card" aria-labelledby="page-heading">
+        <div class="hero">
+          <div class="eyebrow">Financial clarity for freelancers</div>
+
+          <h2 id="page-heading">
+            How long can your savings
+            <span>keep you running?</span>
+          </h2>
+
+          <p>
+            Estimate your financial runway and see how freelance income changes the
+            time you have to find your next opportunity.
+          </p>
+        </div>
+
+        <div class="currency-toggle" role="group" aria-label="Choose display currency">
+          <button class="currency-option" type="button" data-currency="USD" aria-pressed="true">USD ($)</button>
+          <button class="currency-option" type="button" data-currency="PKR" aria-pressed="false">PKR (Rs)</button>
+          <button class="currency-option" type="button" data-currency="EUR" aria-pressed="false">EUR (€)</button>
+        </div>
+
+        <form id="calculatorForm" novalidate>
+          <div class="calculator-grid">
+            <div class="field">
+              <label for="savings">Current total savings</label>
+              <div class="input-wrap">
+                <span class="currency-symbol" aria-hidden="true">$</span>
+                <input
+                  id="savings"
+                  name="savings"
+                  type="number"
+                  min="0"
+                  step="100"
+                  placeholder="25,000"
+                  inputmode="decimal"
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="expenses">Average monthly expenses</label>
+              <div class="input-wrap">
+                <span class="currency-symbol" aria-hidden="true">$</span>
+                <input
+                  id="expenses"
+                  name="expenses"
+                  type="number"
+                  min="0"
+                  step="50"
+                  placeholder="3,000"
+                  inputmode="decimal"
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+
+          </div>
+
+          <section class="pipeline-panel" aria-labelledby="pipelineTitle">
+            <div class="pipeline-heading">
+              <div>
+                <h3 id="pipelineTitle">Multi-Client Revenue Pipeline</h3>
+                <p>Add retainers or recurring projects to calculate total monthly revenue.</p>
+              </div>
+              <button class="add-project" id="addProject" type="button">+ Add Project</button>
+            </div>
+            <div class="project-rows" id="projectRows"></div>
+            <div class="pipeline-total">Total monthly revenue: <strong id="pipelineTotal">$0.0</strong></div>
+          </section>
+
+          <div class="budget-control">
+            <div class="budget-heading">
+              <label for="budgetCut">Simulate Budget Cuts (Reduce Expenses by 0% to 50%)</label>
+              <output class="budget-value" id="budgetCutValue" for="budgetCut">0%</output>
+            </div>
+            <input class="budget-slider" id="budgetCut" name="budgetCut" type="range" min="0" max="50" step="1" value="0" />
+            <div class="budget-result" id="extraRunway">Adjust the slider to see extra runway.</div>
+          </div>
+
+          <div class="adjustment-grid">
+            <div class="budget-control compact-control">
+              <div class="budget-heading">
+                <label for="taxRate">Tax Withholding Reserve (0% - 40%)</label>
+                <output class="budget-value" id="taxRateValue" for="taxRate">0%</output>
+              </div>
+              <input class="budget-slider" id="taxRate" type="range" min="0" max="40" step="1" value="0" />
+            </div>
+            <div class="budget-control compact-control">
+              <div class="budget-heading">
+                <label for="inflationRate">Annual Inflation Adjustment (0% - 15%)</label>
+                <output class="budget-value" id="inflationRateValue" for="inflationRate">0%</output>
+              </div>
+              <input class="budget-slider" id="inflationRate" type="range" min="0" max="15" step="0.5" value="0" />
+            </div>
+          </div>
+        </form>
+
+        <div class="results" aria-live="polite" aria-atomic="true">
+          <article class="result-card">
+            <div class="result-label">Without freelance income</div>
+            <div class="result-value" id="basicRunway">—</div>
+            <div class="result-note" id="basicNote">
+              —
+            </div>
+          </article>
+
+          <article class="result-card highlight">
+            <div class="result-label">Adjusted runway</div>
+            <div class="result-value" id="adjustedRunway">—</div>
+            <div class="result-note" id="adjustedNote">
+              Enter values to calculate
+            </div>
+          </article>
+        </div>
+
+        <section class="expense-breakdown" aria-labelledby="breakdownTitle">
+          <div class="breakdown-heading">
+            <div>
+              <h3 id="breakdownTitle">Monthly Burn Rate Cost Breakdown</h3>
+              <p>See how a simple 20% optimization could change each category.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="expense-table">
+              <thead>
+                <tr>
+                  <th scope="col">Category</th>
+                  <th scope="col">Current Cost</th>
+                  <th scope="col">Optimized Potential (-20%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Housing &amp; workspace</td>
+                  <td id="costHousing">$0.0</td>
+                  <td class="optimized-cell" id="optimizedHousing">$0.0</td>
+                </tr>
+                <tr>
+                  <td>Tools &amp; software</td>
+                  <td id="costTools">$0.0</td>
+                  <td class="optimized-cell" id="optimizedTools">$0.0</td>
+                </tr>
+                <tr>
+                  <td>Living essentials</td>
+                  <td id="costLiving">$0.0</td>
+                  <td class="optimized-cell" id="optimizedLiving">$0.0</td>
+                </tr>
+                <tr>
+                  <td>Transport &amp; services</td>
+                  <td id="costTransport">$0.0</td>
+                  <td class="optimized-cell" id="optimizedTransport">$0.0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <section class="runway-graph-panel" aria-labelledby="graphTitle">
+            <div class="breakdown-heading">
+              <div>
+                <h3 id="graphTitle">Savings Balance Projection</h3>
+                <p id="graphSummary">Enter savings, expenses, and projects to plot your runway.</p>
+              </div>
+            </div>
+            <div class="graph-wrap">
+              <svg id="runwayGraph" viewBox="0 0 720 260" role="img" aria-labelledby="graphTitle graphSummary" preserveAspectRatio="none">
+                <line class="graph-gridline" x1="48" y1="26" x2="696" y2="26"></line>
+                <line class="graph-gridline" x1="48" y1="132" x2="696" y2="132"></line>
+                <line class="graph-zero" x1="48" y1="226" x2="696" y2="226"></line>
+                <path class="graph-area" id="runwayArea" d="M48 226 L696 226"></path>
+                <path class="graph-line" id="runwayPath" d="M48 226 L696 226"></path>
+                <line class="graph-crossover" id="crossoverLine" x1="696" y1="26" x2="696" y2="226"></line>
+                <circle class="graph-point" id="crossoverPoint" cx="696" cy="226" r="5"></circle>
+                <text class="graph-axis-label" x="48" y="249">Month 0</text>
+                <text class="graph-axis-label" id="graphEndLabel" x="696" y="249" text-anchor="end">Month 0</text>
+                <text class="graph-axis-label" x="54" y="220">$0</text>
+              </svg>
+            </div>
+          </section>
+          <div class="print-report-title">Freelance Runway Report</div>
+          <button class="print-button" id="printReport" type="button">Export My Runway Report (PDF/Print)</button>
+        </section>
+
+        <section class="seo-content" aria-label="Freelance financial guidance">
+          <article class="seo-panel">
+            <h3>Understanding Your Freelance Runway: A Guide to Financial Stability</h3>
+            <p>Your freelance runway is the number of months your available savings can support your essential lifestyle and business costs when reliable income changes. Start by identifying a realistic survival cash block: rent or mortgage, utilities, food, insurance, debt payments, and the minimum operating expenses required to keep working. Divide current total savings by average monthly expenses to create a baseline runway. Then use the adjusted figure to include expected freelance income and understand how much that income extends your plan. A runway calculator is useful because it turns an uncertain balance into a time-based decision. Review the result whenever a contract ends, expenses shift, or a new retainer begins. Keep emergency cash separate from money reserved for taxes, equipment, or planned investments. A clear runway helps you choose projects deliberately, negotiate from a stronger position, and avoid accepting every opportunity from a place of panic. It also gives you a practical target for rebuilding savings after a slower month.</p>
+          </article>
+
+          <article class="seo-panel">
+            <h3>How to Optimize Your Monthly Business Burn Rate as an Independent Contractor</h3>
+            <p>Your monthly business burn rate is the amount required to keep your independent contracting practice operating. Lowering it can extend your runway without demanding more billable hours. Begin with a subscription audit: list every design platform, project manager, storage plan, meeting service, and automation tool, then cancel duplicate or rarely used accounts. Where possible, switch to annual plans only after confirming consistent usage, or choose flexible tiers that match current client volume. Review office overheads as well. A home workspace, coworking day pass, or shared studio may cost less than a permanent office lease. Track software, phone, internet, insurance, equipment, and professional fees separately so you can see which costs directly support revenue. Negotiate vendor renewals and avoid buying tools for hypothetical future work. An optimized burn rate should still protect quality, security, and client delivery. The goal is not extreme cutting; it is building a lean operating system that preserves cash while keeping your freelance business dependable and professional.</p>
+          </article>
+
+          <article class="seo-panel">
+            <h3>The Importance of Separating Personal and Business Savings in Freelancing</h3>
+            <p>Separating personal and business savings creates clearer financial boundaries for freelancers and independent contractors. Use dedicated banking spaces for client revenue, operating costs, taxes, and personal living expenses instead of allowing every payment to flow into one balance. This structure makes your runway calculation more accurate because business reserves can be measured separately from household emergency cash. It also improves tax security: move an appropriate portion of each payment into a tax allocation account before treating the remainder as available income. A second reserve can cover software renewals, equipment replacement, professional insurance, or a quiet sales period. Maintain simple records for transfers and reconcile accounts regularly so you know which money is committed and which money is genuinely flexible. Separate savings also reduces the risk of spending tax funds by mistake and makes conversations with an accountant easier. With distinct accounts, you can price projects more confidently, pay yourself consistently, and see whether your business is generating enough to support personal goals without weakening essential working capital.</p>
+          </article>
+
+          <article class="seo-panel">
+            <h3>Strategies to Build a 6-Month Emergency Fund While Working Flexibly</h3>
+            <p>A six-month emergency fund gives a flexible worker room to handle late invoices, seasonal demand, client changes, or an unexpected health expense. Build it incrementally rather than waiting for one unusually large contract. Set a savings floor based on essential monthly expenses, then transfer a fixed percentage of every payment into a protected reserve. During strong months, add a second contribution from income above your normal target. During volatile months, maintain the habit with a smaller minimum instead of stopping completely. Direct windfalls, unused subscription savings, and tax refunds toward the fund before increasing discretionary spending. Keep the reserve liquid and low risk, separate from long-term investments and day-to-day operating cash. Review your target whenever household obligations or business expenses change. A runway calculator can show the number of months already covered and make progress visible after each deposit. Once you reach six months, continue monitoring the balance for inflation and lifestyle changes. The fund is not idle money; it is a practical tool that lets you work flexibly without making rushed financial decisions.</p>
+          </article>
+
+          <article class="seo-panel">
+            <h3>Leveraging Micro-Tools to Track Business Expenses and Predict Runway Depletion</h3>
+            <p>Small digital tools can make freelance financial management more consistent without creating a heavy administrative workload. Use a simple expense tracker to record subscriptions, travel, equipment, client materials, and recurring office costs as they happen. Pair those records with a runway calculator that compares available savings, monthly expenses, and estimated freelance income. Together, these micro-tools help predict runway depletion before a cash gap becomes urgent. Set a recurring monthly review to update actual spending, compare it with your budget, and test a conservative income scenario. You can also create alerts for low balances, upcoming renewals, and invoices that remain unpaid beyond their terms. Keep categories practical so the system is easy to maintain; accurate, current data is more valuable than a complicated dashboard you stop using. A few minutes of tracking each week can reveal unnecessary costs, identify profitable client patterns, and show when to increase outreach. Forecasting is not about predicting every payment perfectly. It is about seeing trends early enough to reduce spending, build a reserve, or plan the next contract with confidence.</p>
+          </article>
+        </section>
+
+        <div class="message" id="message" role="status">
+          Your results update instantly as you type.
+        </div>
+
+        <a
+          class="cta"
+          id="affiliateButton"
+          href="https://araplhn.org/4/168a30b0917c7248849cf9848eef2761"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>
+            Access Recommended Freelance Infrastructure Tools
+            <small>Explore tools to streamline your freelance business</small>
+          </span>
+          <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </section>
+
+      <aside class="ad-card" aria-label="Sponsored tools and resources">
+        <div class="ad-content">
+          <div class="ad-icon" aria-hidden="true">✦</div>
+          <h3>Your ad could be here</h3>
+          <p>Sponsor Message · Reach independent professionals building their next chapter.</p>
+        </div>
+
+        <div class="monetag-zone" aria-label="Monetag advertising zone">
+          <script src="https://quge5.com/88/tag.min.js" data-zone="295894" async data-cfasync="false"></script>
+        </div>
+
+        <article class="static-ad figma">
+          <div class="ad-kicker">Creative workflow</div>
+          <h4>Figma Pro for Freelancers</h4>
+          <p>Design, prototype, and collaborate with clients from one beautiful workspace.</p>
+          <span class="ad-link">Explore Figma Pro →</span>
+        </article>
+
+        <article class="static-ad quickbooks">
+          <div class="ad-kicker">Business essentials</div>
+          <h4>QuickBooks Invoicing</h4>
+          <p>Send polished invoices and keep your freelance finances organized.</p>
+          <span class="ad-link">Try invoicing tools →</span>
+        </article>
+
+        <div class="ad-footer">Sponsored resources</div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      function updateVisitorCount() {
+        const countElement = document.getElementById("visitor-count");
+        if (!countElement) return;
+
+        const dayKey = new Date().toISOString().slice(0, 10);
+        const counterKey = `freelance-runway-visitors-${dayKey}`;
+        const sessionKey = `freelance-runway-visitor-session-${dayKey}`;
+        let count = 1;
+
+        try {
+          count = Number.parseInt(localStorage.getItem(counterKey) || "0", 10);
+          if (!Number.isFinite(count) || count < 0) count = 0;
+          if (!sessionStorage.getItem(sessionKey)) {
+            count += 1;
+            localStorage.setItem(counterKey, String(count));
+            sessionStorage.setItem(sessionKey, "counted");
+          }
+        } catch (error) {
+          // Storage can be unavailable in private browsing; show a safe local fallback.
+          count = 1;
+        }
+
+        countElement.textContent = String(Math.max(1, count));
+      }
+
+      const savingsInput = document.getElementById("savings");
+      const expensesInput = document.getElementById("expenses");
+      const budgetCutInput = document.getElementById("budgetCut");
+      const budgetCutValue = document.getElementById("budgetCutValue");
+      const taxRateInput = document.getElementById("taxRate");
+      const taxRateValue = document.getElementById("taxRateValue");
+      const inflationRateInput = document.getElementById("inflationRate");
+      const inflationRateValue = document.getElementById("inflationRateValue");
+      const extraRunway = document.getElementById("extraRunway");
+      const projectRows = document.getElementById("projectRows");
+      const addProjectButton = document.getElementById("addProject");
+      const pipelineTotal = document.getElementById("pipelineTotal");
+      const calculatorForm = document.getElementById("calculatorForm");
+      const basicRunway = document.getElementById("basicRunway");
+      const adjustedRunway = document.getElementById("adjustedRunway");
+      const basicNote = document.getElementById("basicNote");
+      const adjustedNote = document.getElementById("adjustedNote");
+      const message = document.getElementById("message");
+      const printReport = document.getElementById("printReport");
+      const currencyButtons = Array.from(document.querySelectorAll(".currency-option"));
+      const currencySymbols = () => document.querySelectorAll(".currency-symbol");
+      const runwayPath = document.getElementById("runwayPath");
+      const runwayArea = document.getElementById("runwayArea");
+      const crossoverLine = document.getElementById("crossoverLine");
+      const crossoverPoint = document.getElementById("crossoverPoint");
+      const graphEndLabel = document.getElementById("graphEndLabel");
+      const graphSummary = document.getElementById("graphSummary");
+
+      const currencyMap = { USD: "$", PKR: "Rs", EUR: "€" };
+      let activeCurrency = "USD";
+      const numberFormat = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+
+      function readNumber(input) {
+        const value = Number(input && input.value);
+        return Number.isFinite(value) && value >= 0 ? value : 0;
+      }
+
+      function formatMonths(months) {
+        if (!Number.isFinite(months)) return "∞";
+        if (months <= 0) return "0 MO";
+        return `${numberFormat.format(months)} MO`;
+      }
+
+      function formatAmount(amount) {
+        return `${currencyMap[activeCurrency]}${numberFormat.format(amount)}`;
+      }
+
+      function getProjectIncome() {
+        return Array.from(document.querySelectorAll(".project-income"))
+          .reduce((total, input) => total + readNumber(input), 0);
+      }
+
+      function updateCurrency(nextCurrency) {
+        if (!currencyMap[nextCurrency]) return;
+        activeCurrency = nextCurrency;
+        currencySymbols().forEach((symbol) => {
+          symbol.textContent = currencyMap[activeCurrency];
+        });
+        currencyButtons.forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.currency === activeCurrency));
+        });
+        calculateRunway();
+      }
+
+      function updateExpenseBreakdown(monthlyExpenses) {
+        const categories = [
+          ["Housing", 0.35],
+          ["Tools", 0.20],
+          ["Living", 0.25],
+          ["Transport", 0.20]
+        ];
+        categories.forEach(([name, share]) => {
+          const current = monthlyExpenses * share;
+          const optimized = current * 0.8;
+          const currentCell = document.getElementById(`cost${name}`);
+          const optimizedCell = document.getElementById(`optimized${name}`);
+          if (currentCell) currentCell.textContent = formatAmount(current);
+          if (optimizedCell) optimizedCell.textContent = formatAmount(optimized);
+        });
+      }
+
+      function simulateRunway(savings, monthlyExpenses, monthlyIncome, monthlyInflation) {
+        const points = [{ month: 0, balance: savings }];
+        let balance = savings;
+        let crossoverMonth = Infinity;
+        let previousBalance = savings;
+        let previousBurn = monthlyExpenses - monthlyIncome;
+        const maxMonths = 600;
+
+        for (let month = 1; month <= maxMonths; month += 1) {
+          const inflatedExpenses = monthlyExpenses * Math.pow(1 + monthlyInflation, month - 1);
+          const burn = inflatedExpenses - monthlyIncome;
+          previousBalance = balance;
+          previousBurn = burn;
+          balance += monthlyIncome - inflatedExpenses;
+          points.push({ month, balance: Math.max(0, balance) });
+
+          if (balance <= 0) {
+            crossoverMonth = burn > 0
+              ? (month - 1) + Math.min(1, Math.max(0, previousBalance / burn))
+              : month;
+            break;
+          }
+        }
+
+        if (!Number.isFinite(crossoverMonth) && points.length === maxMonths + 1) {
+          crossoverMonth = Infinity;
+        }
+
+        return { points, crossoverMonth, previousBurn };
+      }
+
+      function drawRunwayGraph(projection, savings, inflationRate) {
+        const points = projection.points;
+        const graphLeft = 48;
+        const graphRight = 696;
+        const graphTop = 26;
+        const graphBottom = 226;
+        const maxBalance = Math.max(savings, ...points.map((point) => point.balance), 1);
+        const lastMonth = Math.max(points[points.length - 1].month, 1);
+        const graphMonths = Number.isFinite(projection.crossoverMonth)
+          ? Math.max(lastMonth, projection.crossoverMonth, 1)
+          : lastMonth;
+        const coords = points.map((point) => {
+          const x = graphLeft + (graphRight - graphLeft) * (point.month / graphMonths);
+          const y = graphBottom - (Math.max(0, point.balance) / maxBalance) * (graphBottom - graphTop);
+          return { x, y };
+        });
+        const lineData = coords.map((point) => `${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" L");
+        const first = coords[0];
+        const last = coords[coords.length - 1];
+        runwayPath.setAttribute("d", `M${lineData}`);
+        runwayArea.setAttribute("d", `M${lineData} L${last.x.toFixed(1)} ${graphBottom} L${first.x.toFixed(1)} ${graphBottom} Z`);
+
+        const crossoverX = Number.isFinite(projection.crossoverMonth)
+          ? graphLeft + (graphRight - graphLeft) * (projection.crossoverMonth / graphMonths)
+          : graphRight;
+        crossoverLine.setAttribute("x1", crossoverX.toFixed(1));
+        crossoverLine.setAttribute("x2", crossoverX.toFixed(1));
+        crossoverPoint.setAttribute("cx", crossoverX.toFixed(1));
+        crossoverPoint.setAttribute("cy", graphBottom);
+        graphEndLabel.textContent = `Month ${Math.round(graphMonths)}`;
+
+        if (!savings) {
+          graphSummary.textContent = "Enter savings, expenses, and projects to plot your runway.";
+        } else if (Number.isFinite(projection.crossoverMonth)) {
+          graphSummary.textContent = `Projected savings reach zero at approximately month ${numberFormat.format(projection.crossoverMonth)} after ${inflationRate}% annual inflation adjustment.`;
+        } else {
+          graphSummary.textContent = "The projection remains positive across the 600-month planning horizon.";
+        }
+      }
+
+      function addProjectRow(name = "", amount = "") {
+        const row = document.createElement("div");
+        row.className = "project-row";
+        row.innerHTML = `
+          <input class="project-name" type="text" aria-label="Project name" placeholder="Client or project name" autocomplete="off" value="${name.replace(/"/g, "&quot;")}">
+          <div class="project-income-wrap">
+            <span class="currency-symbol" aria-hidden="true">${currencyMap[activeCurrency]}</span>
+            <input class="project-income" type="number" min="0" step="50" aria-label="Monthly retainer amount" placeholder="Monthly retainer" inputmode="decimal" value="${amount}">
+          </div>
+          <button class="remove-project" type="button" aria-label="Remove project">×</button>
+        `;
+        projectRows.appendChild(row);
+        row.querySelectorAll("input").forEach((input) => {
+          input.addEventListener("input", calculateRunway, { passive: true });
+          input.addEventListener("change", calculateRunway, { passive: true });
+        });
+        row.querySelector(".remove-project").addEventListener("click", () => {
+          const rows = projectRows.querySelectorAll(".project-row");
+          if (rows.length === 1) {
+            row.querySelector(".project-name").value = "";
+            row.querySelector(".project-income").value = "";
+          } else {
+            row.remove();
+          }
+          calculateRunway();
+        });
+      }
+
+      function calculateRunway() {
+        const savings = readNumber(savingsInput);
+        const expenses = readNumber(expensesInput);
+        const totalIncome = getProjectIncome();
+        const cutPercent = Math.min(50, Math.max(0, readNumber(budgetCutInput)));
+        const taxPercent = Math.min(40, Math.max(0, readNumber(taxRateInput)));
+        const inflationRate = Math.min(15, Math.max(0, readNumber(inflationRateInput)));
+        const effectiveExpenses = expenses * (1 - cutPercent / 100);
+        const afterTaxIncome = totalIncome * (1 - taxPercent / 100);
+        const monthlyInflation = Math.pow(1 + inflationRate / 100, 1 / 12) - 1;
+
+        budgetCutValue.textContent = `${cutPercent}%`;
+        taxRateValue.textContent = `${taxPercent}%`;
+        inflationRateValue.textContent = `${inflationRate}%`;
+        pipelineTotal.textContent = formatAmount(totalIncome);
+        updateExpenseBreakdown(expenses);
+
+        if (expenses <= 0 || effectiveExpenses <= 0) {
+          basicRunway.textContent = savings > 0 ? "∞" : "—";
+          adjustedRunway.textContent = savings > 0 ? "∞" : "—";
+          basicNote.textContent = "No monthly expenses entered";
+          adjustedNote.textContent = "No monthly burn rate";
+          extraRunway.textContent = "Add monthly expenses to simulate budget cuts.";
+          message.className = "message";
+          message.textContent = "Add monthly expenses to calculate runway.";
+          drawRunwayGraph({ points: [{ month: 0, balance: savings }], crossoverMonth: Infinity }, savings, inflationRate);
+          return;
+        }
+
+        const basicProjection = simulateRunway(savings, effectiveExpenses, 0, monthlyInflation);
+        const adjustedProjection = simulateRunway(savings, effectiveExpenses, afterTaxIncome, monthlyInflation);
+        const standardMonths = basicProjection.crossoverMonth;
+        const adjustedMonths = adjustedProjection.crossoverMonth;
+
+        basicRunway.textContent = formatMonths(standardMonths);
+        adjustedRunway.textContent = formatMonths(adjustedMonths);
+        basicNote.textContent = `${formatAmount(effectiveExpenses)} starts the monthly burn`;
+        adjustedNote.textContent = afterTaxIncome > 0
+          ? `${formatAmount(afterTaxIncome)} after-tax monthly pipeline revenue`
+          : "No after-tax pipeline revenue entered";
+
+        if (Number.isFinite(standardMonths) && Number.isFinite(adjustedMonths)) {
+          const savedMonths = adjustedMonths - standardMonths;
+          extraRunway.textContent = cutPercent > 0
+            ? `A ${cutPercent}% cut plus pipeline revenue saves approximately ${formatMonths(savedMonths)} versus the adjusted baseline.`
+            : `Your pipeline and tax reserve change the projection by ${formatMonths(savedMonths)} versus no income.`;
+        } else {
+          extraRunway.textContent = "Your current assumptions keep the projected balance positive across the planning horizon.";
+        }
+
+        if (Number.isFinite(adjustedMonths)) {
+          message.className = "message success";
+          message.textContent = `Your inflation-adjusted runway reaches the savings crossover at approximately month ${numberFormat.format(adjustedMonths)}.`;
+        } else {
+          message.className = "message success";
+          message.textContent = "Your after-tax pipeline covers the modeled expenses across the planning horizon.";
+        }
+        drawRunwayGraph(adjustedProjection, savings, inflationRate);
+      }
+
+      currencyButtons.forEach((button) => {
+        button.addEventListener("click", () => updateCurrency(button.dataset.currency));
+      });
+
+      [savingsInput, expensesInput, budgetCutInput, taxRateInput, inflationRateInput].forEach((input) => {
+        if (!input) return;
+        input.addEventListener("input", calculateRunway, { passive: true });
+        input.addEventListener("change", calculateRunway, { passive: true });
+      });
+
+      if (addProjectButton) {
+        addProjectButton.addEventListener("click", () => {
+          addProjectRow();
+          calculateRunway();
+          projectRows.lastElementChild.querySelector(".project-name").focus();
+        });
+      }
+
+      if (calculatorForm) {
+        calculatorForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          calculateRunway();
+        });
+      }
+
+      if (printReport) {
+        printReport.addEventListener("click", () => window.print());
+      }
+
+      updateVisitorCount();
+      addProjectRow();
+      calculateRunway();
+    })();
+  </script>
+</body>
+</html>
