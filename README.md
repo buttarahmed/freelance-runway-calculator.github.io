@@ -1,1 +1,1 @@
-# freelance-runway-calculator.io
+# freelance-runway-calculator.github.io
